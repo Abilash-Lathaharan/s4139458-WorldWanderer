@@ -22,7 +22,7 @@ The goal of this activity is to implement and test the `runFlightSearch()` funct
 2.  Open the project in your IDE.
 3.  Ensure **JUnit 5** is configured in your classpath.
 4.  Run `FlightSearchTest.java` as a **JUnit Test**.
-5.  All **12 test cases** (and the valid case) should pass successfully ✅.
+5.  All **12 test cases** (and the valid case) should pass successfully.
 
 ***
  
