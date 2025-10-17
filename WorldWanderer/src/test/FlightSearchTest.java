@@ -1,3 +1,5 @@
+// Author: Abilash Lathaharan (S4139458)
+
 package test;
 
 
@@ -17,7 +19,7 @@ public class FlightSearchTest {
         flightSearch = new FlightSearch(); // before the test, create a FlightSearch object
     }
 
-    /* departureDate, departureAirportCode, emergencyRowSeating, 
+    /* Parameter order: departureDate, departureAirportCode, emergencyRowSeating, 
        returnDate, destinationAirportCode, seatingClass, 
        adultPassengerCount, childPassengerCount, infantPassengerCount)
      */
@@ -28,7 +30,7 @@ public class FlightSearchTest {
     	// adult = 0, children = 0, infant = 0, so total passengers = 0 which is less than 9
         assertFalse(flightSearch.runFlightSearch("17/10/2025", "mel", false, "18/11/2025", "syd", "economy", 0, 0, 0));
         // adult = 9, children = 1, infant = 1, so total passengers = 11 which is greater than 9 
-        assertFalse(flightSearch.runFlightSearch("17/10/2025", "mel", false, "18/11/2025", "syd", "economy", 9, 1, 1));
+        assertFalse(flightSearch.runFlightSearch("17/10/2025", "mel", false, "18/11/2025", "syd", "economy", 9, 1, 0));
         // adult = 9, children = 0, infant = 0, so total passengers = 9 which is correct (1-9
         assertTrue(flightSearch.runFlightSearch("17/10/2025", "mel", false, "18/11/2025", "syd", "economy", 9, 0, 0));
     }
@@ -36,36 +38,49 @@ public class FlightSearchTest {
     // validate Children not allowed in emergency row or first class
     @Test
     void testChildEmergencyAndClass() {
+    	// Invalid (non-economy can’t have emergency row)
         assertFalse(flightSearch.runFlightSearch("17/10/2025", "mel", true, "25/10/2025", "pvg", "first", 1, 1, 0));
+        // Valid (economy can be emergency row)
         assertTrue(flightSearch.runFlightSearch("17/10/2025", "mel", true, "25/10/2025", "pvg", "economy", 1, 1, 0));
+        // Valid (non-emergency first class allowed for children) 
+        assertTrue(flightSearch.runFlightSearch("17/10/2025", "mel", false, "25/10/2025", "pvg", "first", 1, 1, 0));
     }
 
     // validate Infants not allowed in emergency row or business class
     @Test
     void testInfantRestrictions() {
-        assertFalse(flightSearch.runFlightSearch("17/10/2025", "mel", true, "25/10/2025", "pvg", "economy", 1, 0, 1)); // invalid emergency
-        assertFalse(flightSearch.runFlightSearch("17/10/2025", "mel", false, "25/10/2025", "pvg", "business", 1, 0, 1)); // invalid business infant
+    	// Invalid (infant in emergency row) 
+        assertFalse(flightSearch.runFlightSearch("17/10/2025", "mel", true, "25/10/2025", "pvg", "economy", 1, 0, 1));
+        // Invalid (non-economy emergency) 
+        assertFalse(flightSearch.runFlightSearch("17/10/2025", "mel", false, "25/10/2025", "pvg", "business", 1, 0, 1));
+        // Valid (non-emergency allowed) 
         assertTrue(flightSearch.runFlightSearch("17/10/2025", "mel", false, "25/10/2025", "pvg", "economy", 1, 0, 1));
     }
 
     // validate Each adult can supervise up to 2 children
     @Test
     void testAdultChildRatio() {
+    	// Invalid (exceeds limit)
         assertFalse(flightSearch.runFlightSearch("17/10/2025", "mel", false, "25/10/2025", "pvg", "economy", 1, 3, 0));
+        // Valid (2 per adult) 
         assertTrue(flightSearch.runFlightSearch("17/10/2025", "mel", false, "25/10/2025", "pvg", "economy", 2, 4, 0));
     }
 
     // validate Each adult can have only 1 infant
     @Test
     void testAdultInfantRatio() {
+    	// invalid (limit exceeded)
         assertFalse(flightSearch.runFlightSearch("17/10/2025", "mel", false, "25/10/2025", "pvg", "economy", 1, 0, 2));
+        // valid 
         assertTrue(flightSearch.runFlightSearch("17/10/2025", "mel", false, "25/10/2025", "pvg", "economy", 2, 0, 2));
     }
 
     // validate Departure date cannot be in the past
     @Test
     void testDateInPast() {
+    	// Invalid (past date)
         assertFalse(flightSearch.runFlightSearch("01/01/2020", "mel", false, "05/01/2020", "pvg", "economy", 1, 0, 0));
+        // valid (future date)
         assertTrue(flightSearch.runFlightSearch("01/11/2026", "mel", false, "01/12/2026", "pvg", "economy", 1, 0, 0));
     }
 
@@ -92,20 +107,31 @@ public class FlightSearchTest {
     // validate Return date cannot be before departure date
     @Test
     void testReturnBeforeDeparture() {
+    	// Invalid (Return date cannot be before departure date)
         assertFalse(flightSearch.runFlightSearch("25/10/2025", "mel", false, "24/10/2025", "pvg", "economy", 1, 0, 0));
+        // valid return date
+        assertTrue(flightSearch.runFlightSearch("25/10/2025", "mel", false, "30/10/2025", "pvg", "economy", 1, 0, 0));
     }
 
     // validate Seating class must be valid + emergency row rule
     @Test
     void testInvalidClassAndEmergencyRules() {
-        assertFalse(flightSearch.runFlightSearch("25/10/2025", "mel", true, "28/10/2025", "pvg", "business", 1, 0, 0)); // invalid emergency for business
-        assertTrue(flightSearch.runFlightSearch("25/10/2025", "mel", false, "28/10/2025", "pvg", "business", 1, 0, 0)); // valid non-emergency
+    	// invalid emergency for business
+        assertFalse(flightSearch.runFlightSearch("25/10/2025", "mel", true, "28/10/2025", "pvg", "business", 1, 0, 0)); 
+        // valid non-emergency
+        assertTrue(flightSearch.runFlightSearch("25/10/2025", "mel", false, "28/10/2025", "pvg", "business", 1, 0, 0)); 
+        // Invalid (class not allowed) 
+        assertFalse(flightSearch.runFlightSearch("25/10/2025", "mel", false, "28/10/2025", "pvg", "luxury", 1, 0, 0));
     }
 
     // validate Airport codes valid and not identical
     @Test
     void testAirportCodes() {
+    	// destination and departure are same; mel
         assertFalse(flightSearch.runFlightSearch("25/10/2025", "mel", false, "28/10/2025", "mel", "economy", 1, 0, 0));
+        // departure airport code is not in list / Invalid (Code Not in List)
+        assertFalse(flightSearch.runFlightSearch("25/10/2025", "cmb", false, "28/10/2025", "mel", "economy", 1, 0, 0));
+        // different airports and valid codes
         assertTrue(flightSearch.runFlightSearch("25/10/2025", "mel", false, "28/10/2025", "pvg", "economy", 1, 0, 0));
     }
 
@@ -113,7 +139,7 @@ public class FlightSearchTest {
     @Test
     void testAllValidInputs() {
         boolean result = flightSearch.runFlightSearch("23/11/2025", "mel", false, "29/11/2025", "pvg", "economy", 2, 1, 0);
-        assertTrue(result);
+        assertTrue(result); 
 
         // Verify attributes initialized
         assertEquals("mel", flightSearch.getDepartureAirportCode());
