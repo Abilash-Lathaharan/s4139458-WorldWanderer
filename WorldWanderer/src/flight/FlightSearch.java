@@ -26,16 +26,21 @@ public class FlightSearch {
     private int totalPassengers;
 
     // fixed classes and valid airports; which are stored as final attributes in array list
-    private static final List<String> VALID_CLASSES = Arrays.asList("economy", "business", "first");
+    private static final List<String> VALID_CLASSES = Arrays.asList("economy", "premium economy", "business", "first");
     private static final List<String> VALID_AIRPORTS = Arrays.asList("syd", "mel", "lax", "cdg", "del", "pvg", "doh");
 
     // runFlightSearch method; if all conditions are paased, return true; else return false
     public boolean runFlightSearch(String departureDate, String departureAirportCode, boolean emergencyRowSeating, 
     		String returnDate, String destinationAirportCode, String seatingClass, 
     		int adultPassengerCount, int childPassengerCount, int infantPassengerCount) {
+    	
+    	// new one
+    	 if (adultPassengerCount < 0 || childPassengerCount < 0 || infantPassengerCount < 0) {
+             return false;
+         }
 
         // Condition 1: Total passengers between 1 and 9 
-    	totalPassengers = adultPassengerCount + childPassengerCount + infantPassengerCount;
+    	int totalPassengers = adultPassengerCount + childPassengerCount + infantPassengerCount;
         if (totalPassengers < 1 || totalPassengers > 9) return false;
 
         // Condition 9: Seating class must be valid 
@@ -82,7 +87,7 @@ public class FlightSearch {
         this.adultPassengerCount = adultPassengerCount;
         this.childPassengerCount = childPassengerCount;
         this.infantPassengerCount = infantPassengerCount;
-        this.totalPassengers = adultPassengerCount + childPassengerCount + infantPassengerCount;
+        this.totalPassengers = totalPassengers;
 
         return true;
     }
