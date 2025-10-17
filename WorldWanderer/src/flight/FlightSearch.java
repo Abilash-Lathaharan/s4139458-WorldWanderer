@@ -26,7 +26,7 @@ public class FlightSearch {
     private int totalPassengers;
 
     // fixed classes and valid airports; which are stored as final attributes in array list
-    private static final List<String> VALID_CLASSES = Arrays.asList("economy", "premium economy", "business", "first");
+    private static final List<String> VALID_CLASSES = Arrays.asList("economy", "business", "first");
     private static final List<String> VALID_AIRPORTS = Arrays.asList("syd", "mel", "lax", "cdg", "del", "pvg", "doh");
 
     // runFlightSearch method; if all conditions are paased, return true; else return false
@@ -59,7 +59,7 @@ public class FlightSearch {
         if (!isValidDateFormat(departureDate) || !isValidDateFormat(returnDate)) return false;
 
         // Condition 8: Validate date order and calendar logic 
-        Date dep = parseDate(departureDate);
+        Date dep = parseDate(departureDate); // change the departure and return date to Date data type
         Date ret = parseDate(returnDate);
         if (dep == null || ret == null) return false;
         if (ret.before(dep)) return false;
@@ -82,6 +82,7 @@ public class FlightSearch {
         this.adultPassengerCount = adultPassengerCount;
         this.childPassengerCount = childPassengerCount;
         this.infantPassengerCount = infantPassengerCount;
+        this.totalPassengers = adultPassengerCount + childPassengerCount + infantPassengerCount;
 
         return true;
     }
@@ -105,12 +106,13 @@ public class FlightSearch {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             sdf.setLenient(false);
             return sdf.parse(dateStr);
-        } catch (ParseException e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
     // Returns today's date (00:00 hrs) 
+    // [1]
     private Date getTodayDate() {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -166,3 +168,6 @@ public class FlightSearch {
     	return infantPassengerCount; 
     }
 }
+
+
+//  Reference: [1] https://www.w3schools.com/java/java_date.asp
